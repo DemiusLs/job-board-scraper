@@ -47,11 +47,6 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-		<dependency>
-        	<groupId>com.rometools</groupId>
-        	<artifactId>rome</artifactId>
-        	<version>2.1.0</version> 
-    	</dependency>
 		<!-- Libreria per leggere variabili da file env -->
 		<dependency>
             <groupId>me.paulschwarz</groupId>

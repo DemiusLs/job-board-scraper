@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Job Scraper Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .job-card:hover { transform: scale(1.01); transition: 0.2s; }
+        .description-truncate {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-dark bg-primary mb-4">
+    <div class="container">
+        <span class="navbar-brand mb-0 h1">LinkedIn Job Scraper</span>
+        <a th:href="@{/jobs/refresh}" class="btn btn-light">Aggiorna Offerte</a>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row">
+        <div class="col-12 mb-3" th:each="job : ${jobs}">
+            <div class="card shadow-sm job-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h5 class="card-title text-primary" th:text="${job.title}">Titolo Lavoro</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">
+                                <span th:text="${job.company}">Azienda</span> • 
+                                <span th:text="${job.location}">Località</span>
+                            </h6>
+                        </div>
+                        <span class="badge bg-info text-dark" 
+                              th:text="${#temporals.format(job.publishDate, 'dd/MM HH:mm')}">Data</span>
+                    </div>
+                    
+                    <p class="card-text description-truncate text-secondary" th:text="${job.description}">
+                        Descrizione...
+                    </p>
+                    
+                    <a th:href="${job.link}" target="_blank" class="btn btn-outline-primary btn-sm">
+                        Vedi su LinkedIn
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 text-center mt-5" th:if="${#lists.isEmpty(jobs)}">
+            <div class="alert alert-warning">
+                Nessun lavoro salvato. Clicca su "Aggiorna Offerte" per iniziare la ricerca!
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="text-center py-4 text-muted">
+    <small>Job Scraper v1.0 - Java 25 & Spring Boot 4</small>
+</footer>
+
+</body>
+</html>
