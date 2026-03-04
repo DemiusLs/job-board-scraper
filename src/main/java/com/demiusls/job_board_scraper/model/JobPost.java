@@ -22,6 +22,7 @@ public class JobPost {
     private String title;
     private String company; 
     private String location;
+    private String workMode;
 
     @Column(columnDefinition = "TEXT")
     private String description;
@@ -84,6 +85,15 @@ public class JobPost {
     public void setLocation(String location) {
         this.location = location;
     }
+
+    public String getWorkMode() {
+        return this.workMode;
+    }
+
+    public void setWorkMode(String workMode) {
+        this.workMode = workMode;
+    }
+
 
 
 }

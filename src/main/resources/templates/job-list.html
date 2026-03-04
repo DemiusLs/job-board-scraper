@@ -24,44 +24,81 @@
 </nav>
 
 <div class="container">
-    <div class="row">
-        <div class="col-12 mb-3" th:each="job : ${jobs}">
-            <div class="card shadow-sm job-card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <h5 class="card-title text-primary" th:text="${job.title}">Titolo Lavoro</h5>
-                            <h6 class="card-subtitle mb-2 text-muted">
-                                <span th:text="${job.company}">Azienda</span> • 
-                                <span th:text="${job.location}">Località</span>
-                            </h6>
-                        </div>
-                        <span class="badge bg-info text-dark" 
-                              th:text="${#temporals.format(job.publishDate, 'dd/MM HH:mm')}">Data</span>
-                    </div>
-                    
-                    <p class="card-text description-truncate text-secondary" th:text="${job.description}">
-                        Descrizione...
-                    </p>
-                    
-                    <a th:href="${job.link}" target="_blank" class="btn btn-outline-primary btn-sm">
-                        Vedi su LinkedIn
-                    </a>
-                </div>
-            </div>
+    <div class="row mb-4 bg-white p-3 shadow-sm rounded">
+        <div class="col-md-4">
+            <label class="form-label font-weight-bold">Cerca per Titolo/Azienda</label>
+            <input type="text" id="searchInput" class="form-control" placeholder="Es: Java, Milano, Amazon...">
         </div>
-
-        <div class="col-12 text-center mt-5" th:if="${#lists.isEmpty(jobs)}">
-            <div class="alert alert-warning">
-                Nessun lavoro salvato. Clicca su "Aggiorna Offerte" per iniziare la ricerca!
-            </div>
+        <div class="col-md-4">
+            <label class="form-label font-weight-bold">Modalità</label>
+            <select id="modeFilter" class="form-select">
+                <option value="">Tutte le modalità</option>
+                <option value="Remote">Solo Remoto</option>
+                <option value="On-site">Ibrido</option>
+                <option value="Hybrid">In Sede</option>
+            </select>
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+            <button onclick="filterJobs()" class="btn btn-primary w-100">Applica Filtri</button>
         </div>
     </div>
+
+    <div class="table-responsive bg-white shadow-sm rounded">
+        <table class="table table-hover align-middle" id="jobTable">
+            <thead class="table-dark">
+                <tr>
+                    <th>Titolo</th>
+                    <th>Azienda</th>
+                    <th>Località</th>
+                    <th>Modalità</th>
+                    <th>Azione</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="job : ${jobs}" class="job-row">
+                    <td class="fw-bold text-primary" th:text="${job.title}">Titolo</td>
+                    <td th:text="${job.company}">Azienda</td>
+                    <td th:text="${job.location}">Località</td>
+                    <td>
+                        <span th:if="${job.workMode == 'Remote'}" class="badge bg-success">Remoto</span>
+                        <span th:if="${job.workMode == 'Hybrid'}" class="badge bg-info text-dark">Ibrido</span>
+                        <span th:if="${job.workMode == 'On-site'}" class="badge bg-secondary">In Sede</span>
+                    </td>
+                    <td>
+                        <a th:href="${job.link}" target="_blank" class="btn btn-sm btn-outline-dark">Link</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
 </div>
 
 <footer class="text-center py-4 text-muted">
     <small>Job Scraper v1.0 - Java 25 & Spring Boot 4</small>
 </footer>
+
+<script>
+function filterJobs() {
+    let searchInput = document.getElementById("searchInput").value.toLowerCase();
+    let modeFilter = document.getElementById("modeFilter").value.toLowerCase();
+    let rows = document.querySelectorAll(".job-row");
+
+    rows.forEach(row => {
+        let rowText = row.innerText.toLowerCase();
+        let rowMode = row.querySelector("td:nth-child(4)").innerText.toLowerCase();
+
+        let matchesSearch = rowText.includes(searchInput);
+        let matchesMode = modeFilter === "" || rowMode.includes(modeFilter);
+
+        if (matchesSearch && matchesMode) {
+            row.style.display = "";
+        } else {
+            row.style.display = "none";
+        }
+    });
+}
+</script>
 
 </body>
 </html>
