@@ -4,26 +4,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.demiusls.job_board_scraper.service.RssScraperService;
+import com.demiusls.job_board_scraper.service.ScraperManager;
 
 @Controller
 @RequestMapping("/jobs")
 public class JobController {
     @Autowired
-    private RssScraperService scraperService;
+    private ScraperManager scraperManager;
 
     @GetMapping
     public String listJobs(Model model) {
-        model.addAttribute("jobs", scraperService.getAllSavedJobs());
+        model.addAttribute("jobs", scraperManager.getAllSavedJobs());
         return "job-list"; 
     }
 
-    @GetMapping("/refresh")
-    public String refreshJobs() {
-        scraperService.fetchAndSaveJobs();
-        return "redirect:/jobs"; 
+    @PostMapping("/scrape")
+    public String runScraper() {
+        scraperManager.runAllScrapers();
+        return "redirect:/"; 
     }
     
 }

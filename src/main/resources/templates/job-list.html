@@ -9,6 +9,7 @@
         .description-truncate {
             display: -webkit-box;
             -webkit-line-clamp: 3;
+            line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
@@ -19,7 +20,7 @@
 <nav class="navbar navbar-dark bg-primary mb-4">
     <div class="container">
         <span class="navbar-brand mb-0 h1">LinkedIn Job Scraper</span>
-        <a th:href="@{/jobs/refresh}" class="btn btn-light">Aggiorna Offerte</a>
+        <a th:href="@{/jobs/scrape}" class="btn btn-light">Aggiorna Offerte</a>
     </div>
 </nav>
 
