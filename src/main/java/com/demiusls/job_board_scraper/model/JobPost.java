@@ -23,6 +23,7 @@ public class JobPost {
     private String company; 
     private String location;
     private String workMode;
+    private String Category;
 
     @Column(columnDefinition = "TEXT")
     private String description;
@@ -93,6 +94,15 @@ public class JobPost {
     public void setWorkMode(String workMode) {
         this.workMode = workMode;
     }
+
+    public String getCategory() {
+        return this.Category;
+    }
+
+    public void setCategory(String Category) {
+        this.Category = Category;
+    }
+
 
 
 

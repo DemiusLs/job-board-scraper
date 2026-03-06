@@ -24,18 +24,25 @@ public class ScraperManager {
     private List<JobScraper> scrapers;
 
     public void runAllScrapers() {
-        // 1. Definiamo le nostre ricerche usando il record SearchCriteria
-        // (title, location, remoteOnly, level, daysOld)
+        // Definiamo le nostre ricerche usando il record SearchCriteria
         List<SearchCriteria> searches = List.of(
-            new SearchCriteria("Java Developer", "Italy", true, "Junior", 3),
-            new SearchCriteria("Backend Developer", "Milano", false, "", 3),
-            new SearchCriteria("Frontend", "Brescia", false, "Entry Level", 3),
-            new SearchCriteria("Data Engineer", "Lombardia", false, "", 3)
+            new SearchCriteria("Java", "Italy", true, "", 3),
+            new SearchCriteria("Backend ", "Italy", true, "", 3),
+            new SearchCriteria("Frontend", "Italy", true, "", 3),
+            new SearchCriteria("Full Stack", "Italy", true, "", 3),
+            new SearchCriteria("Java", "Brescia", false, "", 3),
+            new SearchCriteria("Backend ", "Brescia", false, "", 3),
+            new SearchCriteria("Frontend", "Brescia", false, "", 3),
+            new SearchCriteria("Full Stack", "Brescia", false, "", 3),
+            new SearchCriteria("Java", "Milano", false, "", 3),
+            new SearchCriteria("Backend ", "Milano", false, "", 3),
+            new SearchCriteria("Frontend", "Milano", false, "", 3),
+            new SearchCriteria("Full Stack", "Milano", false, "", 3)
+            
         );
 
         System.out.println("=== Inizio ciclo di scraping generale ===");
-
-        // 2. Chiediamo a ogni operaio (scraper) di fare il suo lavoro
+        //Cicla su tutti gli scraper e tutte le ricerche, delegando il lavoro agli scraper
         for (JobScraper scraper : scrapers) {
             System.out.println("-> Affido il lavoro a: " + scraper.getProviderName());
             
@@ -47,10 +54,9 @@ public class ScraperManager {
                     List<JobPost> jobs = scraper.fetchJobs(criteria);
                     int salvati = 0;
                     
-                    // 3. Il Manager controlla i duplicati e salva nel DB
+                    // Il Manager controlla i duplicati e salva nel DB
                     for (JobPost job : jobs) {
                         if (job.getLink() != null && !job.getLink().isEmpty()) {
-                            // Se il link non esiste già nel database, lo salviamo
                             if (!jobRepository.existsByLink(job.getLink())) {
                                 jobRepository.save(job);
                                 salvati++;
@@ -60,11 +66,12 @@ public class ScraperManager {
                     
                     System.out.println("   [OK] Trovati e salvati " + salvati + " nuovi lavori.");
                     
-                    // Pausa di 2 secondi tra una ricerca e l'altra per non farsi bloccare dalle API
+                    // Pausa di 2 secondi tra una ricerca e l'altra 
                     Thread.sleep(2000);
                     
                 } catch (Exception e) {
                     System.err.println("   [ERRORE] Problema con la ricerca " + criteria.title() + ": " + e.getMessage());
+                    break;
                 }
             }
         }
