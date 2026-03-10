@@ -23,6 +23,42 @@ public class ScraperManager {
     @Autowired
     private List<JobScraper> scrapers;
 
+
+    public void runScrapingForCriteria(SearchCriteria criteria, String provider) {
+        System.out.println("=== Inizio scraping personalizzato per: " + criteria.title() + " in " + criteria.location() + " su " + provider + " ===");
+        
+        for (JobScraper scraper : scrapers) {
+            
+            if ("Tutte".equalsIgnoreCase(provider) || scraper.getProviderName().equalsIgnoreCase(provider)) {
+                
+                System.out.println("-> Interrogo: " + scraper.getProviderName());
+                try {
+                    List<JobPost> jobs = scraper.fetchJobs(criteria);
+                    int salvati = 0;
+                    
+                    for (JobPost job : jobs) {
+                        if (job.getLink() != null && !job.getLink().isEmpty()) {
+                            if (!jobRepository.existsByLink(job.getLink())) {
+                                jobRepository.save(job);
+                                salvati++;
+                            }
+                        }
+                    }
+                    System.out.println("   [OK] " + scraper.getProviderName() + ": Salvati " + salvati + " nuovi lavori.");
+                } catch (Exception e) {
+                    System.err.println("   [ERRORE] " + scraper.getProviderName() + " - " + e.getMessage());
+                }
+                
+            } else {
+                System.out.println("-> Salto " + scraper.getProviderName() + " (Filtro utente)");
+            }
+        }
+        System.out.println("=== Scraping personalizzato completato! ===");
+    }
+
+
+
+
     public void runAllScrapers() {
         // Definiamo le nostre ricerche usando il record SearchCriteria
         List<SearchCriteria> searches = List.of(

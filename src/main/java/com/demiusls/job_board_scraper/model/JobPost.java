@@ -24,6 +24,7 @@ public class JobPost {
     private String location;
     private String workMode;
     private String Category;
+    private String provider;
 
     @Column(columnDefinition = "TEXT")
     private String description;
@@ -103,6 +104,14 @@ public class JobPost {
         this.Category = Category;
     }
 
+
+    public String getProvider() {
+        return this.provider;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
+    }
 
 
 

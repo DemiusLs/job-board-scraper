@@ -19,21 +19,54 @@
 
 <nav class="navbar navbar-dark bg-primary mb-4">
     <div class="container">
-        <span class="navbar-brand mb-0 h1">LinkedIn Job Scraper</span>
-        <a th:href="@{/jobs/scrape}" class="btn btn-light">Aggiorna Offerte</a>
+        <span class="navbar-brand mb-0 h1">Universal Job Scraper</span>
     </div>
 </nav>
 
+<div class="container mb-4">
+    <div class="card shadow-sm border-primary">
+        <div class="card-body">
+            <h5 class="card-title text-primary mb-3">Cerca nuove offerte di lavoro dal Web</h5>
+            <form th:action="@{/jobs/search}" method="post" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label">Cosa (Titolo, Parola chiave)</label>
+                    <input type="text" name="title" class="form-control" placeholder="es. Java, Marketing..." required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Dove (Città o Nazione)</label>
+                    <input type="text" name="location" class="form-control" placeholder="es. Milano, Italy..." required>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Piattaforma</label>
+                    <select name="provider" class="form-select">
+                        <option value="Tutte">Tutte (Lento)</option>
+                        <option value="Adzuna" selected>Adzuna (Veloce)</option>
+                        <option value="Indeed">Indeed (Selenium)</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" name="remoteOnly" id="remoteOnly">
+                        <label class="form-check-label" for="remoteOnly">Solo Remoto</label>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100 fw-bold">Avvia Scraping</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <div class="container mb-4 mt-4">
+    <h5 class="mb-3">Filtra i lavori salvati nel Database</h5>
     <div class="row g-3">
         <div class="col-md-3">
-            <input type="text" id="filterLocation" class="form-control" placeholder="Cerca luogo (es. Milano)..." onkeyup="filterJobs()">
+            <input type="text" id="filterLocation" class="form-control" placeholder="Filtra luogo..." onkeyup="filterJobs()">
         </div>
-        
         <div class="col-md-3">
-            <input type="text" id="filterCategory" class="form-control" placeholder="Cerca categoria (es. IT)..." onkeyup="filterJobs()">
+            <input type="text" id="filterCategory" class="form-control" placeholder="Filtra categoria..." onkeyup="filterJobs()">
         </div>
-
         <div class="col-md-3">
             <select id="filterWorkMode" class="form-select" onchange="filterJobs()">
                 <option value="ALL">Tutte le modalità</option>
@@ -42,7 +75,6 @@
                 <option value="On-site">In sede</option>
             </select>
         </div>
-        
         <div class="col-md-3">
             <button class="btn btn-secondary w-100" onclick="resetFilters()">Resetta Filtri</button>
         </div>
@@ -50,7 +82,7 @@
 </div>
 
 <div class="container">
-    <table class="table table-striped table-hover">
+    <table class="table table-striped table-hover shadow-sm bg-white">
         <thead class="table-dark">
             <tr>
                 <th>Data</th>
@@ -58,8 +90,7 @@
                 <th>Azienda</th>
                 <th>Località</th>
                 <th>Modalità</th>
-                <th>Categoria</th>
-                <th>Azione</th>
+                <th>Piattaforma</th> <th>Azione</th>
             </tr>
         </thead>
         <tbody>
@@ -79,7 +110,9 @@
                           th:text="${job.workMode}">Modalità</span>
                 </td>
                 
-                <td th:text="${job.category}">Categoria</td>
+                <td>
+                    <span class="badge bg-info text-dark" th:text="${job.provider != null ? job.provider : job.category}">Adzuna</span>
+                </td>
                 <td>
                     <a th:href="${job.link}" target="_blank" class="btn btn-sm btn-primary">Candidati</a>
                 </td>
@@ -90,26 +123,21 @@
 
 <script>
     function filterJobs() {
-        // 1. Leggi cosa ha scritto/selezionato l'utente (convertito in minuscolo per non avere problemi con le maiuscole)
         const locFilter = document.getElementById('filterLocation').value.toLowerCase();
         const catFilter = document.getElementById('filterCategory').value.toLowerCase();
         const modeFilter = document.getElementById('filterWorkMode').value;
         
-        // 2. Prendi tutte le righe
         const rows = document.querySelectorAll('.job-row');
         
         rows.forEach(row => {
-            // 3. Leggi i dati della singola riga
             const rowLoc = (row.getAttribute('data-location') || '').toLowerCase();
             const rowCat = (row.getAttribute('data-category') || '').toLowerCase();
             const rowMode = row.getAttribute('data-workmode');
             
-            // 4. Controlla se la riga rispetta TUTTI e tre i filtri
             const matchesLoc = rowLoc.includes(locFilter);
             const matchesCat = rowCat.includes(catFilter);
             const matchesMode = (modeFilter === 'ALL' || rowMode === modeFilter);
             
-            // 5. Mostra o nascondi
             if (matchesLoc && matchesCat && matchesMode) {
                 row.style.display = '';
             } else {
@@ -119,7 +147,6 @@
     }
 
     function resetFilters() {
-        // Svuota tutti i campi e ricarica
         document.getElementById('filterLocation').value = '';
         document.getElementById('filterCategory').value = '';
         document.getElementById('filterWorkMode').value = 'ALL';
